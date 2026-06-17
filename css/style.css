@@ -1,0 +1,992 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Noto+Serif+JP:wght@400;600;900&family=Noto+Sans+JP:wght@300;400;700&display=swap');
+
+/* ==========================================================================
+   1. デザインシステム / CSS変数定義
+   ========================================================================== */
+
+:root {
+  /* 共通トランジション */
+  --transition-slow: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --transition-normal: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --transition-fast: all 0.15s ease-in-out;
+  --border-radius-sm: 6px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 24px;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.08);
+
+  /* デフォルトテーマ: 和紙ライトモード (Parchment Light) */
+  --font-serif: 'Noto Serif JP', 'Georgia', serif;
+  --font-sans: 'Noto Sans JP', 'Montserrat', sans-serif;
+  --font-mono: 'Montserrat', monospace;
+
+  /* 背景色とグラデーション */
+  --bg-base: #f6f3eb; /* 柔らかな和紙の生成り色 */
+  --bg-card: rgba(253, 251, 246, 0.85); /* 半透明の和紙 */
+  --bg-input: #fbf9f4;
+  --bg-sidebar: #efebe0;
+  
+  /* ボーダーとグリッド線 */
+  --border-color: #d1c9b7; /* 古い墨引き線のような薄茶 */
+  --border-color-light: #e6e0d2;
+  
+  /* テキストカラー */
+  --text-primary: #2b2b2b; /* 濃い墨色 */
+  --text-secondary: #5a5447; /* 煤色 */
+  --text-muted: #8e8570; /* 砂色 */
+  
+  /* アセントカラー・機能カラー */
+  --color-merit: #1e5f49; /* 落ち着いた翡翠色・緑 */
+  --color-merit-light: #e4f0ec;
+  --color-merit-glow: rgba(30, 95, 73, 0.15);
+  
+  --color-demerit: #b23a22; /* 鮮やかな朱赤（朱肉の色） */
+  --color-demerit-light: #faeae7;
+  --color-demerit-glow: rgba(178, 58, 34, 0.15);
+  
+  --accent-gold: #c29c53; /* 金泥（くすんだ金） */
+  --accent-gold-bg: #f5eedf;
+  
+  /* テクスチャブレンド用 */
+  --washi-opacity: 0.06;
+}
+
+/* 禅ダークモード (Zen Dark) */
+[data-theme="dark"] {
+  --bg-base: #0c120e; /* 深い漆黒・苔緑の影 */
+  --bg-card: rgba(20, 28, 23, 0.75); /* 深い硯色 */
+  --bg-input: #151d18;
+  --bg-sidebar: #0f1813;
+  
+  --border-color: #2c3830; /* 暗い竹林の影 */
+  --border-color-light: #202b24;
+  
+  --text-primary: #dfede5; /* 絹の白 */
+  --text-secondary: #9cb2a6; /* 青磁色 */
+  --text-muted: #62776d; /* 薄苔色 */
+  
+  --color-merit: #3ebd8e; /* 発光する碧玉 */
+  --color-merit-light: #162a21;
+  --color-merit-glow: rgba(62, 189, 142, 0.3);
+  
+  --color-demerit: #e65d44; /* 燃える朱赤 */
+  --color-demerit-light: #321c17;
+  --color-demerit-glow: rgba(230, 93, 68, 0.3);
+  
+  --accent-gold: #d4af37; /* 輝く金 */
+  --accent-gold-bg: #272213;
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6);
+
+  --washi-opacity: 0.02;
+}
+
+/* ==========================================================================
+   2. ベーススタイル / リセット
+   ========================================================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  min-height: 100vh;
+  transition: var(--transition-slow);
+  position: relative;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* 和紙のテクスチャオーバーレイ（CSSパターンで生成） */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: var(--washi-opacity);
+  background-image: 
+    radial-gradient(circle at 50% 50%, #ffffff 1px, transparent 1px),
+    radial-gradient(circle at 0 0, #000000 1px, transparent 1px);
+  background-size: 4px 4px;
+}
+
+/* ==========================================================================
+   3. レイアウト構造
+   ========================================================================== */
+
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* サイドバー（ナビゲーション） */
+.sidebar {
+  width: 280px;
+  background-color: var(--bg-sidebar);
+  border-right: 1px solid var(--border-color);
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: var(--transition-slow);
+  z-index: 10;
+}
+
+.brand {
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.brand h1 {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  color: var(--text-primary);
+  border-bottom: 2px solid var(--accent-gold);
+  padding-bottom: 15px;
+  display: inline-block;
+}
+
+.brand p {
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.2em;
+  margin-top: 8px;
+  text-transform: uppercase;
+}
+
+.nav-menu {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-grow: 1;
+}
+
+.nav-item button {
+  width: 100%;
+  padding: 14px 20px;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--border-radius-md);
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: var(--transition-normal);
+}
+
+.nav-item button svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.nav-item button:hover {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.nav-item.active button {
+  background-color: var(--bg-card);
+  border-color: var(--border-color);
+  color: var(--accent-gold);
+  box-shadow: var(--shadow-sm);
+}
+
+/* メインコンテンツエリア */
+.main-content {
+  flex-grow: 1;
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: calc(100% - 280px);
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ヘッダーエリア */
+.header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px dashed var(--border-color);
+  padding-bottom: 20px;
+}
+
+.date-selector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: var(--bg-card);
+  padding: 8px 16px;
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.date-selector button {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  transition: var(--transition-fast);
+}
+
+.date-selector button:hover {
+  color: var(--accent-gold);
+  transform: scale(1.1);
+}
+
+.date-selector input[type="date"] {
+  border: none;
+  background: none;
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  cursor: pointer;
+  outline: none;
+  text-align: center;
+}
+
+.theme-toggle button {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-normal);
+  box-shadow: var(--shadow-sm);
+}
+
+.theme-toggle button:hover {
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+  transform: rotate(30deg);
+}
+
+.theme-toggle svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+/* ==========================================================================
+   4. ダッシュボード・統計パネル
+   ========================================================================== */
+
+.dashboard-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.summary-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition-normal);
+}
+
+.summary-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 4px;
+  width: 100%;
+}
+
+.summary-card.merit-summary::before {
+  background-color: var(--color-merit);
+}
+
+.summary-card.demerit-summary::before {
+  background-color: var(--color-demerit);
+}
+
+.summary-card.net-summary::before {
+  background-color: var(--accent-gold);
+}
+
+.card-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+
+.card-value {
+  font-family: var(--font-mono);
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.1;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.card-value span.unit {
+  font-size: 16px;
+  font-family: var(--font-sans);
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.card-trend {
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ==========================================================================
+   5. コンテンツエリア (タブパネル)
+   ========================================================================== */
+
+.tab-panel {
+  display: none;
+  animation: fadeIn 0.4s ease;
+}
+
+.tab-panel.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* タイトルとサブタイトル */
+.section-title {
+  margin-bottom: 24px;
+}
+
+.section-title h2 {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.section-title p {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   6. 「今日の省察」入力グリッド
+   ========================================================================== */
+
+.preset-switcher-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  background-color: var(--bg-card);
+  padding: 12px 24px;
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-color);
+}
+
+.preset-info h3 {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  color: var(--text-primary);
+}
+
+.preset-info p {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.preset-btn {
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 8px 16px;
+  border-radius: var(--border-radius-lg);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition-normal);
+}
+
+.preset-btn:hover {
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+}
+
+.ledger-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+.ledger-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid;
+  padding-bottom: 8px;
+  font-family: var(--font-serif);
+}
+
+.merit-column .column-header {
+  border-color: var(--color-merit);
+  color: var(--color-merit);
+}
+
+.demerit-column .column-header {
+  border-color: var(--color-demerit);
+  color: var(--color-demerit);
+}
+
+.ledger-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 功過アイテムカード */
+.ledger-item {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--border-radius-md);
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: var(--transition-normal);
+  position: relative;
+}
+
+.ledger-item:hover {
+  border-color: var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.item-info {
+  flex-grow: 1;
+  padding-right: 16px;
+}
+
+.item-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.item-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.item-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.merit-column .item-badge {
+  background-color: var(--color-merit-light);
+  color: var(--color-merit);
+}
+
+.demerit-column .item-badge {
+  background-color: var(--color-demerit-light);
+  color: var(--color-demerit);
+}
+
+.item-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.item-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.count-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 18px;
+  font-weight: 400;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.count-btn:hover {
+  background-color: var(--text-primary);
+  color: var(--bg-base);
+}
+
+.count-display {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 700;
+  width: 24px;
+  text-align: center;
+}
+
+.ledger-item.has-count {
+  border-width: 1px;
+}
+
+.merit-column .ledger-item.has-count {
+  border-color: var(--color-merit);
+  background-color: var(--color-merit-glow);
+}
+
+.demerit-column .ledger-item.has-count {
+  border-color: var(--color-demerit);
+  background-color: var(--color-demerit-glow);
+}
+
+/* 省察日記（メモ） */
+.reflection-notes {
+  margin-top: 32px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+}
+
+.notes-header {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+}
+
+.reflection-notes textarea {
+  width: 100%;
+  height: 100px;
+  padding: 16px;
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-color-light);
+  background-color: var(--bg-input);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  resize: none;
+  outline: none;
+  transition: var(--transition-normal);
+}
+
+.reflection-notes textarea:focus {
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 0 2px var(--accent-gold-bg);
+}
+
+/* ==========================================================================
+   7. 統計・カレンダー（GitHub風芝生）
+   ========================================================================== */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+.stats-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+}
+
+.stats-card-title {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: var(--text-primary);
+  border-left: 3px solid var(--accent-gold);
+  padding-left: 10px;
+}
+
+/* GitHub風芝生カレンダー */
+.calendar-grid-container {
+  overflow-x: auto;
+  padding: 10px 0;
+}
+
+.calendar-weeks {
+  display: flex;
+  gap: 4px;
+}
+
+.calendar-week {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.calendar-day {
+  width: 13px;
+  height: 13px;
+  border-radius: 2px;
+  background-color: var(--border-color-light);
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.1s ease;
+}
+
+.calendar-day:hover {
+  transform: scale(1.3);
+  z-index: 2;
+}
+
+/* 芝生ツールチップ */
+.calendar-day::after {
+  content: attr(data-date) ": " attr(data-score) "点";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-6px);
+  background-color: var(--text-primary);
+  color: var(--bg-base);
+  font-size: 10px;
+  font-family: var(--font-mono);
+  padding: 4px 8px;
+  border-radius: 3px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+
+.calendar-day:hover::after {
+  opacity: 1;
+}
+
+/* スコアに応じたカラーランク */
+.calendar-day[data-level="m-3"] { background-color: #0c3321; } /* 極めて高い善 */
+.calendar-day[data-level="m-2"] { background-color: #1a6241; }
+.calendar-day[data-level="m-1"] { background-color: #4a9f75; }
+.calendar-day[data-level="zero"] { background-color: var(--border-color-light); }
+.calendar-day[data-level="d-1"] { background-color: #f7a898; }
+.calendar-day[data-level="d-2"] { background-color: #e36044; }
+.calendar-day[data-level="d-3"] { background-color: #9c250f; } /* 極めて高い悪 */
+
+.calendar-legend {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.legend-box {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+/* ==========================================================================
+   8. 誓願（目標）設定
+   ========================================================================== */
+
+.goal-status-panel {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 32px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.goal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px dashed var(--border-color);
+  padding-bottom: 20px;
+}
+
+.goal-title-area h3 {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  color: var(--text-primary);
+}
+
+.goal-title-area p {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.progress-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.progress-bar-container {
+  height: 16px;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-gold), var(--color-merit));
+  width: 0%;
+  transition: width 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.goal-stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.goal-stat-item {
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--border-radius-md);
+  padding: 16px;
+  text-align: center;
+}
+
+.goal-stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.goal-stat-value {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* 目標作成フォーム */
+.goal-form {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+}
+
+.form-group {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.form-group input, .form-group textarea {
+  padding: 12px;
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-input);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  outline: none;
+  transition: var(--transition-normal);
+}
+
+.form-group input:focus, .form-group textarea:focus {
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 0 2px var(--accent-gold-bg);
+}
+
+.form-btn {
+  background-color: var(--accent-gold);
+  color: #ffffff;
+  border: none;
+  padding: 12px 24px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: var(--transition-normal);
+}
+
+.form-btn:hover {
+  background-color: #b58d40;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ==========================================================================
+   9. 項目カスタマイズ
+   ========================================================================== */
+
+.custom-editor-panel {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 32px;
+}
+
+.item-editor-form {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+  height: fit-content;
+}
+
+.editor-list-panel {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+}
+
+.item-delete-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: var(--transition-fast);
+}
+
+.item-delete-btn:hover {
+  color: var(--color-demerit);
+  background-color: var(--color-demerit-light);
+}
+
+/* ==========================================================================
+   10. レスポンシブ対応
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+  .app-container {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+    padding: 20px;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .brand {
+    margin-bottom: 20px;
+  }
+  
+  .nav-menu {
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 8px;
+    padding-bottom: 8px;
+  }
+  
+  .nav-item button {
+    padding: 10px 16px;
+    white-space: nowrap;
+  }
+  
+  .main-content {
+    width: 100%;
+    padding: 20px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .custom-editor-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .ledger-split {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
