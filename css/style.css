@@ -198,6 +198,7 @@ body::before {
   width: 18px;
   height: 18px;
   fill: currentColor;
+  flex-shrink: 0;
 }
 
 .nav-item button:hover {
@@ -231,6 +232,14 @@ body::before {
   align-items: center;
   border-bottom: 1px dashed var(--border-color);
   padding-bottom: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 .date-selector {
@@ -270,6 +279,36 @@ body::before {
   cursor: pointer;
   outline: none;
   text-align: center;
+}
+
+/* 言語セレクター */
+.lang-selector-container {
+  display: flex;
+  align-items: center;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 8px 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.lang-selector-container svg {
+  width: 18px;
+  height: 18px;
+  fill: var(--text-secondary);
+  margin-right: 8px;
+}
+
+.lang-selector-select {
+  border: none;
+  background: none;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  padding-right: 4px;
 }
 
 .theme-toggle button {
@@ -424,6 +463,7 @@ body::before {
   padding: 12px 24px;
   border-radius: var(--border-radius-md);
   border: 1px solid var(--border-color);
+  gap: 16px;
 }
 
 .preset-info h3 {
@@ -447,6 +487,7 @@ body::before {
   font-weight: 700;
   cursor: pointer;
   transition: var(--transition-normal);
+  white-space: nowrap;
 }
 
 .preset-btn:hover {
@@ -502,6 +543,7 @@ body::before {
   align-items: center;
   transition: var(--transition-normal);
   position: relative;
+  gap: 12px;
 }
 
 .ledger-item:hover {
@@ -511,7 +553,6 @@ body::before {
 
 .item-info {
   flex-grow: 1;
-  padding-right: 16px;
 }
 
 .item-header {
@@ -519,6 +560,7 @@ body::before {
   align-items: center;
   gap: 10px;
   margin-bottom: 4px;
+  flex-wrap: wrap;
 }
 
 .item-name {
@@ -533,6 +575,7 @@ body::before {
   font-weight: 700;
   padding: 2px 6px;
   border-radius: 4px;
+  white-space: nowrap;
 }
 
 .merit-column .item-badge {
@@ -570,6 +613,7 @@ body::before {
   align-items: center;
   justify-content: center;
   transition: var(--transition-fast);
+  flex-shrink: 0;
 }
 
 .count-btn:hover {
@@ -699,7 +743,7 @@ body::before {
 
 /* 芝生ツールチップ */
 .calendar-day::after {
-  content: attr(data-date) ": " attr(data-score) "点";
+  content: attr(data-date) ": " attr(data-score) " pts";
   position: absolute;
   bottom: 100%;
   left: 50%;
@@ -768,6 +812,7 @@ body::before {
   align-items: flex-start;
   border-bottom: 1px dashed var(--border-color);
   padding-bottom: 20px;
+  gap: 16px;
 }
 
 .goal-title-area h3 {
@@ -931,6 +976,9 @@ body::before {
   padding: 4px;
   border-radius: 4px;
   transition: var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .item-delete-btn:hover {
@@ -939,11 +987,79 @@ body::before {
 }
 
 /* ==========================================================================
-   10. レスポンシブ対応
+   10. 右から左へ書く言語（RTL）対応スタイル (Arabic Support)
+   ========================================================================== */
+
+[dir="rtl"] {
+  text-align: right;
+}
+
+[dir="rtl"] .sidebar {
+  border-right: none;
+  border-left: 1px solid var(--border-color);
+}
+
+[dir="rtl"] .nav-item button {
+  text-align: right;
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .date-selector {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .lang-selector-container {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .lang-selector-container svg {
+  margin-right: 0;
+  margin-left: 8px;
+}
+
+[dir="rtl"] .stats-card-title {
+  border-left: none;
+  border-right: 3px solid var(--accent-gold);
+  padding-left: 0;
+  padding-right: 10px;
+}
+
+[dir="rtl"] .ledger-item {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .item-controls {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .calendar-legend {
+  justify-content: flex-start;
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .goal-header {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .custom-item-form-radios {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .btn-cancel-custom-edit {
+  margin-right: 0;
+  margin-left: 10px;
+}
+
+/* ==========================================================================
+   11. レスポンシブ対応
    ========================================================================== */
 
 @media (max-width: 1024px) {
   .app-container {
+    flex-direction: column;
+  }
+
+  [dir="rtl"] .app-container {
     flex-direction: column;
   }
   
@@ -951,6 +1067,11 @@ body::before {
     width: 100%;
     padding: 20px;
     border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  [dir="rtl"] .sidebar {
+    border-left: none;
     border-bottom: 1px solid var(--border-color);
   }
   
